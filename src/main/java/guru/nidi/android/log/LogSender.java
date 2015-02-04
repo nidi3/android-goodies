@@ -18,7 +18,7 @@ public class LogSender implements Runnable {
     private static final AndroidHttpClient client;
     private static String defaultUrl;
     private static int defaultRetries;
-    private final SavingLogger log;
+    private final SavingLog log;
     private final String url;
     private final int retries;
 
@@ -33,15 +33,15 @@ public class LogSender implements Runnable {
         defaultRetries = retries;
     }
 
-    public static void send(SavingLogger log) {
+    public static void send(SavingLog log) {
         new LogSender(log).send();
     }
 
-    public LogSender(SavingLogger log) {
+    public LogSender(SavingLog log) {
         this(log, defaultUrl, defaultRetries);
     }
 
-    public LogSender(SavingLogger log, String url, int retries) {
+    public LogSender(SavingLog log, String url, int retries) {
         this.log = log;
         this.url = url;
         this.retries = retries;

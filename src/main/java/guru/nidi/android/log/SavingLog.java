@@ -11,11 +11,11 @@ import java.util.Date;
 /**
  *
  */
-public class SavingLogger extends AbstractPersister {
+public class SavingLog extends AbstractPersister {
     private static final String KEY = "all";
     private static final int MAX_SIZE = 10000;
 
-    public SavingLogger() {
+    public SavingLog() {
         super("crash-log");
     }
 
@@ -32,11 +32,11 @@ public class SavingLogger extends AbstractPersister {
         });
     }
 
-    public SavingLogger log(final String message) {
+    public SavingLog log(final String message) {
         return log(message, null);
     }
 
-    public SavingLogger log(final String message, final Throwable t) {
+    public SavingLog log(final String message, final Throwable t) {
         set(new Setter() {
             @Override
             public void set(SharedPreferences.Editor editor) {

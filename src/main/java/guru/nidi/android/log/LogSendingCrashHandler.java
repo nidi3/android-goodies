@@ -5,7 +5,7 @@ package guru.nidi.android.log;
  */
 public class LogSendingCrashHandler implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler oldHandler;
-    private final SavingLogger log;
+    private final SavingLog log;
 
     public static void install() {
         final Thread.UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -16,7 +16,7 @@ public class LogSendingCrashHandler implements Thread.UncaughtExceptionHandler {
 
     private LogSendingCrashHandler(Thread.UncaughtExceptionHandler oldHandler) {
         this.oldHandler = oldHandler;
-        log = new SavingLogger();
+        log = new SavingLog();
         LogSender.send(log);
     }
 
