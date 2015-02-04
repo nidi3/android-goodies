@@ -65,10 +65,9 @@ public class LogSender implements Runnable {
         int tries = 0;
         while (retries == 0 || tries < retries) {
             tries++;
-            HttpResponse response = null;
             try {
                 post.setEntity(new StringEntity(log.getLogs()));
-                response = connector.send(post);
+                final HttpResponse response = connector.sendAndClose(post);
                 final StatusLine status = response.getStatusLine();
                 if (status.getStatusCode() != HttpStatus.SC_OK) {
                     throw new IOException("Received response code " + status.getStatusCode() + " " + status.getReasonPhrase());
@@ -81,14 +80,6 @@ public class LogSender implements Runnable {
                     Thread.sleep(60 * 1000 * retryIntervalMinutes());
                 } catch (InterruptedException ie) {
                     //ignore
-                }
-            } finally {
-                if (response != null && response.getEntity() != null) {
-                    try {
-                        response.getEntity().consumeContent();
-                    } catch (IOException e) {
-                        //give up
-                    }
                 }
             }
         }

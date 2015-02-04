@@ -30,8 +30,27 @@ public class HttpConnector {
         return defaultConnector;
     }
 
+    public static void close(HttpResponse response) {
+        if (response != null && response.getEntity() != null) {
+            try {
+                response.getEntity().consumeContent();
+            } catch (IOException e) {
+                //give up
+            }
+        }
+    }
+
     public HttpResponse send(HttpRequestBase request) throws IOException {
         return client.execute(request);
+    }
+
+    public HttpResponse sendAndClose(HttpRequestBase request) throws IOException {
+        HttpResponse response = null;
+        try {
+            return send(request);
+        } finally {
+            close(response);
+        }
     }
 
     private String userAgent() {
