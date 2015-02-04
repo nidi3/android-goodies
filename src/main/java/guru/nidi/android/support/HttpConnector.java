@@ -6,6 +6,7 @@ import guru.nidi.android.ApplicationContextHolder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
@@ -40,6 +41,22 @@ public class HttpConnector {
         }
     }
 
+    public static String toString(HttpResponse response) throws IOException {
+        try {
+            return EntityUtils.toString(response.getEntity());
+        } finally {
+            close(response);
+        }
+    }
+
+    public static byte[] toByteArray(HttpResponse response) throws IOException {
+        try {
+            return EntityUtils.toByteArray(response.getEntity());
+        } finally {
+            close(response);
+        }
+    }
+
     public HttpResponse send(HttpRequestBase request) throws IOException {
         return client.execute(request);
     }
@@ -47,7 +64,8 @@ public class HttpConnector {
     public HttpResponse sendAndClose(HttpRequestBase request) throws IOException {
         HttpResponse response = null;
         try {
-            return send(request);
+            response = send(request);
+            return response;
         } finally {
             close(response);
         }
