@@ -1,13 +1,12 @@
 package guru.nidi.android.log;
 
-import android.net.http.AndroidHttpClient;
 import guru.nidi.android.ApplicationContextHolder;
+import guru.nidi.android.support.HttpConnector;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.params.HttpConnectionParams;
 
 import java.io.IOException;
 
@@ -15,34 +14,23 @@ import java.io.IOException;
  *
  */
 public class LogSender implements Runnable {
-    private static final AndroidHttpClient client;
-    private static String defaultUrl;
-    private static int defaultRetries;
+    private static LogSender defaultSender;
     private final SavingLog log;
+    private final HttpConnector connector;
     private final String url;
     private final int retries;
 
-    static {
-        client = AndroidHttpClient.newInstance(System.getProperty("http.agent"));
-        HttpConnectionParams.setSoTimeout(client.getParams(), 15000);
-        HttpConnectionParams.setConnectionTimeout(client.getParams(), 15000);
+    public static LogSender setDefault(SavingLog log, HttpConnector connector, String url, int retries) {
+        return defaultSender = new LogSender(log, connector, url, retries);
     }
 
-    public static void setDefaults(String url, int retries) {
-        defaultUrl = url;
-        defaultRetries = retries;
+    public static LogSender getDefault() {
+        return defaultSender;
     }
 
-    public static void send(SavingLog log) {
-        new LogSender(log).send();
-    }
-
-    public LogSender(SavingLog log) {
-        this(log, defaultUrl, defaultRetries);
-    }
-
-    public LogSender(SavingLog log, String url, int retries) {
+    public LogSender(SavingLog log, HttpConnector connector, String url, int retries) {
         this.log = log;
+        this.connector = connector;
         this.url = url;
         this.retries = retries;
     }
@@ -53,21 +41,39 @@ public class LogSender implements Runnable {
         }
     }
 
+    public LogSender log(String message) {
+        log.log(message);
+        return this;
+    }
+
+    public LogSender log(String message, Throwable t) {
+        log.log(message, t);
+        return this;
+    }
+
+    public static void logAndSend(String message) {
+        getDefault().log(message).send();
+    }
+
+    public static void logAndSend(String message, Throwable t) {
+        getDefault().log(message, t).send();
+    }
+
     @Override
     public void run() {
         final HttpPost post = new HttpPost(url());
         int tries = 0;
         while (retries == 0 || tries < retries) {
             tries++;
+            HttpResponse response = null;
             try {
                 post.setEntity(new StringEntity(log.getLogs()));
-                final HttpResponse response = client.execute(post);
+                response = connector.send(post);
                 final StatusLine status = response.getStatusLine();
                 if (status.getStatusCode() != HttpStatus.SC_OK) {
                     throw new IOException("Received response code " + status.getStatusCode() + " " + status.getReasonPhrase());
                 }
                 log.clearLogs();
-                client.close();
                 return;
             } catch (IOException e) {
                 log.log("Unsuccessful try to send", e);
@@ -75,6 +81,14 @@ public class LogSender implements Runnable {
                     Thread.sleep(60 * 1000 * retryIntervalMinutes());
                 } catch (InterruptedException ie) {
                     //ignore
+                }
+            } finally {
+                if (response != null && response.getEntity() != null) {
+                    try {
+                        response.getEntity().consumeContent();
+                    } catch (IOException e) {
+                        //give up
+                    }
                 }
             }
         }
