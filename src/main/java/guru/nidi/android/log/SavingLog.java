@@ -64,6 +64,9 @@ public class SavingLog extends AbstractPersister {
         for (StackTraceElement e : t.getStackTrace()) {
             s += "    at " + e.toString() + "\n";
         }
+        if (t.getCause() != null && t.getCause() != t) {
+            s += "Caused by " + formatThrowable(t.getCause());
+        }
         return s;
     }
 
@@ -76,4 +79,3 @@ public class SavingLog extends AbstractPersister {
     }
 
 }
-
