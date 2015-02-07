@@ -74,7 +74,8 @@ public class FragmentHolder {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (IllegalStateException e) {
-            throw new RuntimeException(e);
+            //TODO this can happen: Fragment ChatFragment{4250f830} is not currently in the FragmentManager
+            //for the moment just swallow it
         }
     }
 
