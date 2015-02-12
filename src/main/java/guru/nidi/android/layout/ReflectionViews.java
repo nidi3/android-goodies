@@ -1,6 +1,7 @@
 package guru.nidi.android.layout;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.view.View;
 import guru.nidi.android.ApplicationContextHolder;
 
@@ -29,6 +30,18 @@ public class ReflectionViews extends Views {
         }
     }
 
+    public ReflectionViews(Dialog dialog, int layout) {
+        dialog.setContentView(layout);
+
+        try {
+            for (Field field : getViewFields()) {
+                field.set(this, getView(dialog, field.getName()));
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Cannot set view field", e);
+        }
+    }
+
     public ReflectionViews(View view) {
         try {
             for (Field field : getViewFields()) {
@@ -42,6 +55,15 @@ public class ReflectionViews extends Views {
     private View getView(Activity activity, String name) {
         final int id = getId(name);
         final View v = activity.findViewById(id);
+        if (v == null) {
+            throw new RuntimeException("Could not find view '" + name + "'");
+        }
+        return v;
+    }
+
+    private View getView(Dialog dialog, String name) {
+        final int id = getId(name);
+        final View v = dialog.findViewById(id);
         if (v == null) {
             throw new RuntimeException("Could not find view '" + name + "'");
         }
