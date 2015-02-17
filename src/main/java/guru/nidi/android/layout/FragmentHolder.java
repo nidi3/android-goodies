@@ -5,9 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -16,6 +14,7 @@ public class FragmentHolder {
     private final List<Field> allFields = new ArrayList<>();
     private final List<Field> fields = new ArrayList<>();
     private final FragmentActivity activity;
+    private final Set<String> ignoreSet = new HashSet<>();
 
     public FragmentHolder(FragmentActivity activity) {
         this.activity = activity;
@@ -29,10 +28,14 @@ public class FragmentHolder {
     }
 
     public void ignore(String... ignores) {
+        if (ignores.length == 0) {
+            ignoreSet.clear();
+        } else {
+            ignoreSet.addAll(Arrays.asList(ignores));
+        }
         fields.clear();
-        final List<String> ignoreList = Arrays.asList(ignores);
         for (Field f : allFields) {
-            if (!ignoreList.contains(f.getName())) {
+            if (!ignoreSet.contains(f.getName())) {
                 fields.add(f);
             }
         }
