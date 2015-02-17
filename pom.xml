@@ -10,7 +10,7 @@
 
     <groupId>guru.nidi.android</groupId>
     <artifactId>android-goodies</artifactId>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.5</version>
 
     <name>${project.artifactId}</name>
     <description>Helpers and utils for android development</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:https://github.com/nidi3/android-goodies</connection>
         <developerConnection>scm:git:https://github.com/nidi3/android-goodies</developerConnection>
         <url>https://github.com/nidi3/android-goodies</url>
-        <tag>HEAD</tag>
+        <tag>android-goodies-1.1.5</tag>
     </scm>
 
     <dependencies>
