@@ -47,6 +47,10 @@ public class ApplicationContextHolder {
         return context.getString(resource);
     }
 
+    public static String string(int resource, Object... args) {
+        return context.getString(resource, args);
+    }
+
     public static int color(int resource) {
         return context.getResources().getColor(resource);
     }
