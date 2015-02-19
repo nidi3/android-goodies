@@ -156,7 +156,9 @@ public class JsonUtils {
     }
 
     public static <T extends Enum<T>> T toEnum(String name, T defaultValue) {
-        return name == null || name.length() == 0 ? defaultValue : (T) Enum.valueOf((Class<Enum>) defaultValue.getClass().getEnclosingClass(), name);
+        final Class<? extends Enum> baseClazz = defaultValue.getClass();
+        final Class<? extends Enum> clazz = baseClazz.isEnum() ? baseClazz : (Class<? extends Enum>) baseClazz.getEnclosingClass();
+        return name == null || name.length() == 0 ? defaultValue : (T) Enum.valueOf(clazz, name);
     }
 
     public static String fromEnum(Enum<?> e) {
