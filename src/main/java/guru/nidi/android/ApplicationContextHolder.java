@@ -18,6 +18,7 @@ package guru.nidi.android;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
@@ -64,6 +65,10 @@ public class ApplicationContextHolder {
 
     public static String string(int resource, Object... args) {
         return context.getString(resource, args);
+    }
+
+    public static Drawable drawable(int resource) {
+        return context.getResources().getDrawable(resource);
     }
 
     public static int color(int resource) {
