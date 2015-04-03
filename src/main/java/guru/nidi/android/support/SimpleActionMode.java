@@ -79,9 +79,8 @@ public class SimpleActionMode<T> {
         final List<T> res = new ArrayList<>();
         final SparseBooleanArray pos = view.getCheckedItemPositions();
         for (int i = 0; i < pos.size(); i++) {
-            final int key = pos.keyAt(i);
-            if (pos.valueAt(key)) {
-                res.add(getItemAt(key));
+            if (pos.valueAt(i)) {
+                res.add(getItemAt(pos.keyAt(i)));
             }
         }
         return res;
